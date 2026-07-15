@@ -11,7 +11,11 @@ class RTZRClient:
         self.client_secret = os.getenv("RTZR_CLIENT_SECRET")
         
         if not self.client_id or not self.client_secret:
-            raise ValueError("환경변수(RTZR_CLIENT_ID, RTZR_CLIENT_SECRET)를 설정해주세요.")
+            raise ValueError("\n================================================================\n"
+        "[ERROR] 리턴제로 OpenAPI 자격증명(환경변수)이 설정되지 않았습니다.\n"
+        "프로젝트 루트 폴더에 '.env' 파일을 생성하고 키 값을 입력하셨는지 확인해주세요.\n"
+        "상세 설정 방법은 README.md 문서의 '3. 환경 변수 설정'을 참고바랍니다.\n"
+        "================================================================")
             
         self._sess = requests.Session()
         self._token_info: Optional[Dict[str, Any]] = None
