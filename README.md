@@ -36,15 +36,18 @@ pip install -r requirements.txt
 ```
 
 ### 3. 환경 변수 설정
-프로젝트 루트 폴더에 .env 파일을 생성하고 발급받은 자격증명을 입력합니다(.env.example 파일 참고). 실행 시 오디오 경로는 시스템 환경 변수 설정을 통해 동적으로 제어됩니다.
-```
+프로젝트 루트 폴더에 .env 파일을 생성하고 발급받은 자격증명을 입력합니다. (.env.example 파일 참고)
+기본 테스트용 샘플 음성 파일(`tests/sample.wav`)이 저장소에 기본 내장되어 있어 자격증명 입력 후 즉시 실행이 가능합니다.
+
+```env
 RTZR_CLIENT_ID=your_client_id_here
 RTZR_CLIENT_SECRET=your_client_secret_here
 AUDIO_PATH=tests/sample.wav
 ```
 
 ### 4. 파이프라인 실행
-테스트할 음성 파일이 tests/sample.wav 경로에 위치해 있는지 확인한 뒤, 아래 명령어로 벤치마크 파이프라인을 실행합니다.
+저장소에 내장된 기본 테스트 음성 파일(tests/sample.wav)을 사용하거나, 변경을 원할 경우 다른 음성 파일을 준비하고 .env 내 AUDIO_PATH를 수정한 뒤 아래 명령어로 벤치마크 파이프라인을 실행합니다. 경로에 위치해 있는지 확인한 뒤, 아래 명령어로 벤치마크 파이프라인을 실행합니다.
+
 ```bash
 python src/app.py
 ```
