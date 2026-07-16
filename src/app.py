@@ -5,6 +5,39 @@ from client import RTZRClient
 
 load_dotenv()
 
+def format_srt_time(ms: int) -> str:
+    """밀리초(ms) 데이터를 SRT 자막 표준 포맷(HH:MM:SS,mmm)으로 변환합니다."""
+    hours = ms // 3600000
+    ms %= 3600000
+    minutes = ms // 60000
+    ms %= 60000
+    seconds = ms // 1000
+    milliseconds = ms % 1000
+    return f"{hours:02d}:{minutes:02d}:{seconds:02d},{milliseconds:03d}"
+
+def save_as_srt(utterances: list, output_path: str, use_diarization: bool):
+    """전사 결과를 자막 파일(.srt)로 저장합니다."""
+    try:
+        with open(output_path, "w", encoding="utf-8") as f:
+            for i, utt in enumerate(utterances, 1):
+                start_ms = utt['start_at']
+                # duration 누락 시 기본값 2초(2000ms) 부여
+                duration = utt.get('duration', 2000)
+                end_ms = start_ms + duration
+                
+                start_time = format_srt_time(start_ms)
+                end_time = format_srt_time(end_ms)
+                
+                f.write(f"{i}\n")
+                f.write(f"{start_time} --> {end_time}\n")
+                
+                # 화자 분리 활성화 여부에 따라 화자 정보 추가
+                speaker_info = f"[화자 {utt['spk']}] " if use_diarization and 'spk' in utt else ""
+                f.write(f"{speaker_info}{utt['msg']}\n\n")
+        print(f"[INFO] 자막 파일 저장 완료: {output_path}")
+    except Exception as e:
+        print(f"[WARNING] 자막 파일 저장 실패: {e}")
+
 def format_time(ms: int) -> str:
     """밀리초(ms) 데이터를 [MM:SS] 포맷의 문자열로 정확히 변환합니다."""
     total_seconds = ms // 1000
@@ -61,6 +94,14 @@ def run_stt_pipeline(client: RTZRClient, audio_path: str, model: str, spk_count:
             speaker_info = f" (화자 {utt['spk']})" if config.get("use_diarization") else ""
             print(f"{time_stamp}{speaker_info}: {utt['msg']}")
             
+        # -------------------------------------------------------------
+        # [추가] SRT 자막 파일 자동 추출 및 저장 로직
+        # -------------------------------------------------------------
+        # 결과 파일명을 모델명에 맞게 동적 설정 (예: tests/sample.wav -> tests/sample_whisper.srt)
+        srt_output_path = audio_path.replace(".wav", f"_{model.lower()}.srt")
+        save_as_srt(utterances, srt_output_path, config.get("use_diarization", False))
+        # -------------------------------------------------------------
+
     except Exception as e:
         print(f"[ERROR] {model} 파이프ライン 구동 실패: {e}")
 
