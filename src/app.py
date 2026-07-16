@@ -103,7 +103,7 @@ def run_stt_pipeline(client: RTZRClient, audio_path: str, model: str, spk_count:
         # -------------------------------------------------------------
 
     except Exception as e:
-        print(f"[ERROR] {model} 파이프ライン 구동 실패: {e}")
+        print(f"[ERROR] {model} 파이프라인 구동 실패: {e}")
 
 def main():
     audio_path = os.getenv("AUDIO_PATH", "tests/sample.wav")
